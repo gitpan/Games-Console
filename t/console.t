@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-use Test::More tests => 32;
+use Test::More tests => 37;
 use strict;
 
 BEGIN
@@ -26,6 +26,8 @@ can_ok ('Games::Console', qw/
   backbuffer_size cursor prompt
   input add_input backspace last_input autocomplete
   _render
+  messages clear
+  scroll offset
   /);
 
 my $console = Games::Console->new (
@@ -70,4 +72,14 @@ is ($console->backspace(), 'fo', 'input was erased');
 is ($console->backspace(), 'f', 'input was erased');
 is ($console->backspace(), '', 'input was erased');
 is ($console->backspace(), '', 'input was erased');
+
+$console->message('hallo');
+is ($console->messages(), 1, '1 msg');
+
+is ($console->offset(), 0, 'ofs is 0');
+is ($console->scroll(1), 1, 'ofs is 1');
+is ($console->offset(), 1, 'ofs is 1');
+
+$console->clear();
+is ($console->messages(), 0, 'empty');
 

@@ -17,6 +17,10 @@ Games::Console:
     - backbuffer_size(),
     - prompt(),
     - cursor(),
+2003-04-19 v0.03 Tels - 42 tests
+  * added the following methods:
+    - scroll(), offset()
+    - messages(), clear()	
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

@@ -9,7 +9,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ##############################################################################
 # methods
@@ -59,6 +59,8 @@ sub new
   $self->{border_y} = 5;
   $self->{prompt} = $args->{prompt} || '> ';
   $self->{cursor} = $args->{cursor} || '_';
+  
+  $self->{offset} = 0;
   
   $self->{last_cursor} = 0;
   $self->{cursor_time} = abs($args->{cursor_time} || 300);
@@ -375,6 +377,43 @@ sub add_input
   $self->{current_input} .= $_[0];
   }
 
+sub scroll
+  {
+  my ($self,$ofs) = @_;
+
+  $self->{offset} += $ofs;
+  print $self->{offset},"\n";
+  $self->{offset} = 0 if $self->{offset} < 0;
+  $self->{offset} = scalar @{$self->{messages}}
+   if $self->{offset} >= scalar @{$self->{messages}};
+  print $self->{offset},"\n";
+  $self->{offset};
+  }
+
+sub offset
+  {
+  my ($self) = @_;
+
+  $self->{offset};
+  }
+
+sub messages
+  { 
+  # return number of messages in backbuffer
+  my $self = shift;
+
+  scalar @{$self->{messages}};
+  }
+
+sub clear
+  {
+  # clear backbuffer
+  my $self = shift;
+
+  $self->{messages} = [];
+  $self;
+  }
+
 1;
 
 __END__
@@ -570,6 +609,33 @@ Toggles the console on or off. See L<open()> and L<close()>.
 
 Makes the console immidiately visible or invisible, unlike L<open()>,
 L<close()> or L<toggle()>, which gradually move the console in or out.
+
+=item scroll()
+
+	$console->scroll(-1);
+	$console->scroll(1);
+	$console->scroll(+2);
+
+Scroll the console'soutput by so many lines up or down (to access the
+backbuffer via SHIFT+CURSOR_UP, for instance). See also L<offset()>.
+
+=item offset()
+
+	my $offset = $console->offset();
+
+Return the current offset. See L<scroll()>.
+
+=item messages()
+
+	my $msgs = $console->messages();
+
+Return number of message-lines in backbuffer.
+
+=item clear()
+
+	$console->clear();
+
+Erase all message-lines in the backbuffer, e.g. clear it.
 
 =back
 

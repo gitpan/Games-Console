@@ -2,7 +2,7 @@
 ############################################################################## 
 Games::Console
 
-* None known yet.
+* The offset() set by scroll() is not honoured yet when rendering in OpenGL
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

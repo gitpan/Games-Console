@@ -1,0 +1,41 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.21.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It would check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+
+SHA1 4ab0592a88970a06ff9bd970595eb7c50f0f57b1 BUGS
+SHA1 2877cfada9772d93900eb5d3a35038a3c8c26f0c CHANGES
+SHA1 d6a6c30ee6d9ba6b9afab8bbf6a25e1b23c744e0 LICENSE
+SHA1 f9b10c07febde256c5dcd8feff6fd6a2c2f39451 MANIFEST
+SHA1 c2ab781a3213da644a8d75a16302ad64b0186e26 Makefile.PL
+SHA1 d5abf697f49e9f351e99bcf88166813bfe2d942a README
+SHA1 965902783d39a577d6d25c21edb8f962d0b7ba09 TODO
+SHA1 fe7311d4b22922ce4a4e666174c0bf9e359d0ff3 data/courier.bmp
+SHA1 5303b8724912287d418338b9cedd26f706519f98 examples/lib/SDL/App/FPS/MyConsole.pm
+SHA1 68ccc6ca18669fcaf8239dc0322595d572b6c343 examples/opengl.pl
+SHA1 0cf296e5669be4071ef3298d3418914630e287c0 lib/Games/Console.pm
+SHA1 509489410428ceb3f2f1737bdff4d0c0ae03e9d9 lib/Games/Console/OpenGL.pm
+SHA1 008d4e31828db220ec9b0f074531da2e5768df9c t/console.t
+SHA1 5d77bd75bb5fab894f02b98ccfcee7a23c95c25c t/opengl.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.6 (GNU/Linux)
+Comment: When cryptography is outlawed, bayl bhgynjf jvyy unir cevinpl.
+
+iQEVAwUBPn4acXcLPEOTuEwVAQG3lgf+P6U/wM7BiPl2wtIVs2oUQU94al/MeFWn
+mH/rlCvd1b+4KZA0Jw7rKXl5Wbd6kPZK93ZSe2Ohl2FstsIPN/7CNskV97n9LmEK
+ZalvsnhWWkLqea4M/S6SLAktw6MaZ3NgUNiVLy3QRt/7LTNoTBAIBIf+4Lvzchzg
+MdwHOzqKtcQqNLmAVHd0iQlKDRBQTD+n/oZsgMi7KSAc4ItZcqU6yvxijg7dmlGy
+QnFP7T8pNkUjXIpUeqJQGazN/V/ohoSXxJNCzu7440Lew4q+hT3Pe8+hVzb5FROD
+kIHe4Vez4EOlH31/TABhMc+M1hL9XasI0E3In/1/jMYhAgLhVYaERQ==
+=jK/W
+-----END PGP SIGNATURE-----

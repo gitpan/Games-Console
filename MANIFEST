@@ -1,0 +1,15 @@
+BUGS
+CHANGES
+MANIFEST
+README
+SIGNATURE
+LICENSE
+TODO
+Makefile.PL
+lib/Games/Console.pm
+lib/Games/Console/OpenGL.pm
+data/courier.bmp
+t/console.t
+t/opengl.t
+examples/opengl.pl
+examples/lib/SDL/App/FPS/MyConsole.pm

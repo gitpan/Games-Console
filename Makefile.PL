@@ -5,8 +5,8 @@ WriteMakefile(
     'NAME'		=> 'Games::Console',
     'VERSION_FROM'	=> 'lib/Games/Console.pm', # finds $VERSION
     'PREREQ_PM'		=> {
-			SDL => '1.20.2', # http://bloodgate.com/perl/sdl/
-			Games::OpenGL::Font::2D => '0.04',
+			SDL => 'v1.20.3', # http://bloodgate.com/perl/sdl/
+			Games::OpenGL::Font::2D => '0.05',
 			}, # e.g., Module::Name => 1.1
     'LIBS'		=> [ ], # e.g., '-lm'
     'DEFINE'		=> '', # e.g., '-DHAVE_SOMETHING'

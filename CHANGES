@@ -7,6 +7,16 @@ Games::Console:
     - can move down/up, display messages,
     - shows prompt blinking cursor
     - transparent overlay
+2003-04-08 v0.02 Tels - 37 tests
+  * fixed doc, documented all functions
+  * limit speed, width and height to 0..100
+  * enhanced testsuite for more coverage
+  * added methods:
+    - input(), add_input(), last_input(),
+    - autocomplete()
+    - backbuffer_size(),
+    - prompt(),
+    - cursor(),
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

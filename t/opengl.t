@@ -15,12 +15,15 @@ BEGIN
 
 can_ok ('Games::Console::OpenGL', qw/ 
   new
-  log
+  message
   text_color text_alpha
   background_color background_alpha
+  open close visible toggle
   screen_width
   screen_height
   render
+  backbuffer_size cursor prompt
+  input add_input backspace
   _render
   /);
 

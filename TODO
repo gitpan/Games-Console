@@ -6,6 +6,8 @@ Games::Console
 * documentation and testsuite are still lacking
 * input handling? commands? Or should this be just done outside?
 * Games::Console::SDL?
+* make it possible to "shift" the output, e.g. scroll through the backbuffer
+  by keeping an auxilary offset at were to start rendering message lines
 
 Please send me test-reports, your experiences with this and your ideas - I love
 to hear about my work!

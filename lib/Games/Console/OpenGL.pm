@@ -22,12 +22,11 @@ sub _render
 
   # select our background texture
   # glBindTexture( GL_TEXTURE_2D, $self->{texture} );
+  glDisable( GL_TEXTURE_2D );
 
   # Disable/Enable flags, unless they are already in the right state
   glDisable( GL_DEPTH_TEST );
   glDepthMask(GL_FALSE);        # disable writing to depth buffer
-
-  # glEnable( GL_TEXTURE_2D );
 
   glEnable( GL_BLEND );
   # select type of blending

@@ -9,7 +9,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 ##############################################################################
 # methods
@@ -25,20 +25,21 @@ sub new
   my $args = $_[0];
   $args = { @_ } unless ref $args eq 'HASH';
 
-  $self->{logfile} = $args->{logfile} || '';
-  $self->{loglevel} = int(abs($args->{loglevel} || 0));
-  
   $self->{background_color} = $args->{background} || [0.4, 0.6, 1];
   $self->{background_alpha} = $args->{background_alpha} || 0.5;
 
   $self->{text_color} = $args->{text_color} || [ 0.4, 0.6, 0.8 ];
   $self->{text_alpha} = $args->{text_alpha} || 0.8;
   
+  $self->{max_msg} = $args->{backbuffer_size} || 100;
+  
   $self->{font} = $args->{font};
 
   # maximum height/width in percent
   $self->{width} = abs($self->{width} || 100);
   $self->{height} = abs($args->{height} || 50);
+  $self->{width} = 100 if $self->{width} > 100;
+  $self->{height} = 100 if $self->{height} > 100;
   
   $self->{screen_width} = 640;
   $self->{screen_height} = 480;
@@ -63,6 +64,9 @@ sub new
   $self->{cursor_time} = abs($args->{cursor_time} || 300);
   
   $self->{current_input} = '';	# what user entered until ENTER key is pressed
+  $self->{last_input} = [ ];	
+  $self->{last_input_pos} = 0;	
+  $self->{max_last_input} = 64;	
 
   $self->{cur_height} = 0;	# invisble
   $self;
@@ -173,19 +177,15 @@ sub _render
 
 sub message
   {
-  my ($self,$msg,$loglevel) = @_;
+  my ($self,$msg) = @_;
 
-  push @{$self->{messages}}, [ $msg, $loglevel ];
+  my $m = $self->{messages};			# shortcut
 
-  $self->log ($msg,$loglevel);
+  push @$m, [ $msg ];
 
+  shift @$m while (scalar @$m > $self->{max_msg});
+  
   $self;
-  }
-
-sub log
-  {
-  my ($self,$msg,$loglevel) = @_;
-
   }
 
 sub screen_width
@@ -248,7 +248,11 @@ sub width
   {
   my $self = shift;
 
-  $self->{width} = abs(shift) if @_ > 0;
+  if (@_ > 0)
+    {
+    $self->{width} = abs(shift);
+    $self->{width} = 100 if $self->{width} > 100;
+    }
   $self->{width};
   }
 
@@ -256,7 +260,11 @@ sub height
   {
   my $self = shift;
 
-  $self->{height} = abs(shift) if @_ > 0;
+  if (@_ > 0)
+    {
+    $self->{height} = abs(shift);
+    $self->{height} = 100 if $self->{height} > 100;
+    }
   $self->{height};
   }
 
@@ -264,8 +272,107 @@ sub speed
   {
   my $self = shift;
 
-  $self->{speed} = abs(shift) if @_ > 0;
+  if (@_ > 0)
+    {
+    $self->{speed} = abs(shift);
+    $self->{speed} = 100 if $self->{speed} > 100;
+    }
   $self->{speed};
+  }
+
+sub backbuffer_size
+  {
+  my $self = shift;
+
+  $self->{max_msg} = abs(shift) if @_ > 0;
+  $self->{max_msg};
+  }
+
+sub cursor
+  {
+  my $self = shift;
+
+  $self->{cursor} = $_[0] if @_ > 0;
+  $self->{cursor};
+  }
+
+sub prompt
+  {
+  my $self = shift;
+
+  $self->{prompt} = $_[0] if @_ > 0;
+  $self->{prompt};
+  }
+
+sub backspace
+  {
+  my $self = shift;
+
+  if ($self->{current_input} ne '')
+    {
+    substr($self->{current_input},-1,1) = '';
+    }
+  $self->{current_input};
+  }
+
+sub autocomplete
+  {
+  my $self = shift;
+  
+  $self->{last_input_pos} = 0;	
+  }
+
+sub input
+  {
+  # get/set the current_input buffer
+  my $self = shift;
+
+  if (@_ > 0)
+    {
+    my $m = $self->{last_input};
+    unshift @$m, $self->{current_input}; 
+    pop @$m while (scalar @$m > $self->{max_last_input});
+    $self->{current_input} = $_[0];
+    $self->{last_input_pos} = 0;	
+    }
+  $self->{current_input};
+  }
+
+sub last_input
+  {
+  # set the current_input buffer to the last entered input
+  my $self = shift;
+  my $dir = shift || 0;
+
+  my $m = $self->{last_input};
+
+  my $pos = $self->{last_input_pos};
+  if ($pos < 0 || $pos >= scalar @$m)
+    {
+    $self->{current_input} = ''; 
+    }
+  else
+    {
+    $self->{current_input} = $m->[$pos] if scalar @$m > 0;
+    }
+  if ($dir >= 0)
+    {
+    $pos++ if $pos < scalar @$m;
+    }
+  else
+    {
+    $pos-- if $pos >= 0;
+    }
+  $self->{last_input_pos} = $pos;
+  $self->{current_input};
+  }
+
+sub add_input
+  {
+  # add more text to the current_input buffer
+  my $self = shift;
+
+  $self->{current_input} .= $_[0];
   }
 
 1;
@@ -288,14 +395,19 @@ Games::Console - provide a 2D quake style in-game console
 	  background_alpha => 0.4,
 	  text_color => [ 1,1,1 ],
 	  text_alpha => 1,
-          speed => 50,		# in percent per second
-	  height => 50,		# fully opened, in percent of screen
-	  width => 100,		# fully opened, in percent of screen
+          speed => 50,			# in percent per second
+	  height => 50,			# fully opened, in percent of screen
+	  width => 100,			# fully opened, in percent of screen
+	  backbuffer_size => 100,	# keep so many messages
+	  prompt => ' >',
+	  cursor => '_',
 	);
 
+	$console->screen_width($width);
+	$console->screen_height($height);
 	$console->toggle($current_time);
-	$console->message('Hello there!', $loglevel);
-
+	$console->message('Hello there!');
+	$console->input('a');
 
 =head1 EXPORTS
 
@@ -304,10 +416,11 @@ Exports nothing on default.
 =head1 DESCRIPTION
 
 This package provides you with a quake-style console for your games. The
-console can parse input, log to a logfile, and gather messages.
+console gathers messages and let's you scroll trough them. It also can
+display a command line.
 
-This package is just a base class, that does setup the rendering, but doesn't
-actually render anything.
+This package is just a base class setting up everything,
+but doesn't actually render anything.
 
 See Games::Console::SDL and Games::Console::OpenGL for subclasses that
 implement the actual rendering to the screen via SDL and OpenGL, respectively.
@@ -331,11 +444,44 @@ C<$args> is a hash ref containing the following keys:
 	background_color	color of background as array ref [r,g,b]
 	background_alpha	blend console background over screen background
 
+=item message()
+
+	$console->message($message);
+
+Append a message to the console's buffer.
+
 =item render()
 
 	$console->render ( $current_time );
 
 If the console is currently visible, render it.
+
+=item add_input()
+
+	$console->add_input('a');
+
+Add the text to the current input line (e.g. what is displayed after the
+prompt). See also L<input()>.
+
+=item input()
+
+	$current_input = $console->input();
+	$console->input('foo');
+
+Get or set the contents of the current input line (e.g. what is displayed
+after the prompt). See also L<input()>.
+
+Example usage after user pressed enter:
+
+	$console->message( $console->input() );
+	$console->input('');
+
+=item backspace()
+
+	$console->backspace();
+
+Erases the last charcter from the current input buffer, unless the buffer is
+empty. Returns the current input buffer after the operation.
 
 =item text_color()
 
@@ -344,23 +490,86 @@ If the console is currently visible, render it.
 
 Sets the color of the text output.
 
+=item background_color()
+
+        $rgb = $console->background_color();	# [$r,$g, $b ]
+        $console->background_color(1,0.1,0.8);	# set RGB
+
+Sets the color of the background output. See also L<background_alpha()>.
+
 =item text_alpha()
 
-        $a = $font->text_alpha();		# $a
-        $font->color(0.8);		# set A
-        $font->alpha(undef);		# set's it to 1.0 (seems an OpenGL
+        $a = $console->text_alpha();	# $a
+        $console->alpha(0.8);		# set A
+        $console->alpha(undef);		# set's it to 1.0 (seems an OpenGL
 					# specific set because
 					# glColor($r,$g,$b) also sets $a == 1
 
-Sets the alpha value of the rendered output.
+Sets the alpha value of the rendered text output.
 
-=item spacing_x()
+=item background_alpha()
 
-	$x = $font->spacing_x();
-	$font->spacing_x( $new_width );
+        $a = $console->background_alpha();	# $a
+        $console->background_alpha(0.8);	# set A
 
-Get/set the width of each character. Default is 10. This is costly, since it
-needs to rebuild the font. See also L<spacing_y()> and L<spacing()>.
+Sets the alpha value of the background (e.g. make it semi-transparent or
+opaque).
+
+=item speed()
+
+        $s = $console->speed();		# in percent
+        $console->color(20);		# set new speed (means 5 seconds time)
+
+Gets/sets the opening/closing speed in percent per second, e.g. 25 means
+100/25 = 4 seconds time.
+
+=item cursor()
+
+        $s = $console->cursor();	# get cursor string
+        $console->cursor('_');		# set new cursor
+
+Get/sets the string used as cursor.
+
+=item prompt()
+
+        $s = $console->prompt();	# get prompt string
+        $console->prompt('_');		# set new prompt string
+
+Get/sets the string used as prompt.
+
+=item backbuffer_size()
+
+        $s = $console->backbuffer_size();	# so many lines
+        $console->backbuffer_size(20);		# keep 20
+
+Sets the number of lines in the backbuffer, e.g. how many of the last message
+lines are kept by the console.
+
+=item close()
+
+	$console->close();
+
+Starts closing the console. See L<open()> and L<toggle()>.
+
+=item open()
+
+	$console->open();
+
+Starts opening the console. See L<close()> and L<toggle()>.
+
+=item toggle()
+
+	$console->toggle($current_time);
+
+Toggles the console on or off. See L<open()> and L<close()>.
+
+=item visible()
+
+	$console->visible();
+	$console->visible(1);
+
+Makes the console immidiately visible or invisible, unlike L<open()>,
+L<close()> or L<toggle()>, which gradually move the console in or out.
 
 =back
 

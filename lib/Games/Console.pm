@@ -6,10 +6,9 @@ package Games::Console;
 # (C) by Tels <http://bloodgate.com/>
 
 use strict;
-
 use vars qw/$VERSION/;
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ##############################################################################
 # methods
@@ -645,7 +644,7 @@ None yet.
 
 =head1 AUTHORS
 
-(c) 2003 Tels <http://bloodgate.com/>
+(c) 2003,2006 Tels <http://bloodgate.com/>
 
 =head1 SEE ALSO
 
